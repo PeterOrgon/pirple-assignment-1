@@ -4,32 +4,35 @@ var https  = require('https');
 var url = require('url');
 var StringDecoder = require('string_decoder').StringDecoder;
 var config = require('./config/config');
-var fs = require('fs');
 
-// HTTP server instance
-var httpServer = http.createServer(function(req, res) {
-  unifiedServer(req, res);
-});
+config.set().then(
+  function(environmentSetup) {
 
-// Start HTTP server
-httpServer.listen(config.httpPort, function() {
-  console.log('HTTP Server is listenting on ' + config.httpPort );
-});
+    // HTTP server instance
+    var httpServer = http.createServer(function(req, res) {
+      unifiedServer(req, res);
+    });
 
-// HTTPS server instance
-var httpsServerOptions = {
-  'key': fs.readFileSync('./config/certificates/key.pem'),
-  'cert': fs.readFileSync('./config/certificates/cert.pem')
-};
-var httpsServer = https.createServer(httpsServerOptions, function(req, res) {
-  unifiedServer(req, res);
-});
+    // Start HTTP server
+    httpServer.listen(environmentSetup.httpPort, function() {
+      console.log('Server is listenting on ' + environmentSetup.httpPort );
+    });
 
-// Start HTTPS server
-httpsServer.listen(config.httpsPort, function() {
-  console.log('HTTPS Server is listenting on ' + config.httpsPort );
-});
+    // HTTPS server instance
+    var httpsServer = https.createServer(environmentSetup.serverOptions, function(req, res) {
+      unifiedServer(req, res);
+    });
 
+    // Start HTTPS server
+    httpsServer.listen(environmentSetup.httpsPort, function() {
+      console.log('Server is listenting on ' + environmentSetup.httpsPort );
+    });
+
+  },
+  function(error) {
+    console.log('Configuration failed!', error );
+  }
+);
 
 // Server logic
 var unifiedServer = function(req, res) {
@@ -94,7 +97,7 @@ var unifiedServer = function(req, res) {
 var handlers = {};
 
 handlers.hello = function(data, callback) {
-  callback(200, {'message': 'Wellcome!'});
+  callback(200, {'message': 'Welcome!'});
 };
 
 handlers.notFound = function(data, callback) {
