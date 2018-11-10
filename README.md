@@ -10,7 +10,10 @@ Simple HTTP(port 3000)/HTTPS(port 3001) server which sends back JSON formatted '
 
 ## App start
 
-In your console cd to the app folder and type node index.js
+In your console cd to the app folder and type
+``` sh
+node index.js
+```
 
 ## App use
 
